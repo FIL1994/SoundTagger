@@ -8,3 +8,5 @@ Uses C# with JavaScript, CSS and HTML.
 * [CefSharp](https://github.com/cefsharp/CefSharp)
 * [Taglib](https://github.com/taglib/taglib)
 * [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json)
+
+![Logo](http://philvr.com/Projects/SoundTagger/logo.png)
