@@ -1,0 +1,264 @@
+﻿<!--
+Music Tag
+@author Philip Van Raalte
+@date May 13, 2017
+-->
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Music Tag</title>
+        <link rel="stylesheet" href="lib/jQuery-contextMenu/jquery.contextMenu.min.css">
+        <link rel="stylesheet" href="lib/materialize/css/materialize.min.css">
+        <style>
+            table tbody tr.highlighted {
+                background-color:#999 !important; /*prevents highlighting*/
+            }
+            table tbody tr:hover{
+                cursor: cell;
+            }
+            table {
+                -webkit-user-select: none;
+            }
+
+            .ui-selected {
+                background-color: #999 !important;
+            }
+
+            .ui-selecting {
+                background-color: #a7a7a7 !important;
+            }
+        </style>
+    </head>
+    <body>
+        <header>
+            <nav role="navigation" class="blue-grey darken-2">
+                <ul class="">
+                    <li><a id="folder">Change Folder</a></li>
+                    <li><a id="edit">Edit</a></li>
+                </ul>
+            </nav>
+        </header>
+        <section class="container">
+            <table id="our_table" class="bordered highlight responsive-table">
+                <thead>
+                <tr>
+                    <th>Track</th>
+                    <th>Title</th>
+                    <th>Artist</th>
+                    <th>AlbumArtist</th>
+                    <th>Album</th>
+                    <th>Year</th>
+                    <th>Disc</th>
+                    <th>Genre</th>
+                    <th>FileName</th>
+                    <th>Comment</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                </tbody>
+            </table>
+            <div id="modalEdit" class="modal modal-fixed-footer">
+                <div class="modal-content">
+                    <h4>Edit Song</h4>
+                    <form id="frmEdit">
+                        <div class="input-field">
+                            <input id="track" name="value" class="number" value="0">
+                            <label for="track" class="active">Track</label>
+                        </div>
+                        <div class="input-field">
+                            <input id="title" type="text" class="validate">
+                            <label for="title">Title</label>
+                        </div>
+                        <div class="input-field">
+                            <input id="artist" type="text" class="validate">
+                            <label for="artist">Artist</label>
+                        </div>
+                        <div class="input-field">
+                            <input id="albumArtist" type="text" class="validate">
+                            <label for="albumArtist">AlbumArtist</label>
+                        </div>
+                        <div class="input-field">
+                            <input id="album" type="text" class="validate">
+                            <label for="album">Album</label>
+                        </div>
+                        <div class="input-field">
+                            <input id="year" name="value" class="number" value="0">
+                            <label for="year" class="active">Year</label>
+                        </div>
+                        <div class="input-field">
+                            <input id="disc" name="value" class="number" value="1">
+                            <label for="disc" class="active">Disc</label>
+                        </div>
+                        <div class="input-field">
+                            <input id="genre" type="text" class="validate">
+                            <label for="genre">Genre</label>
+                        </div>
+                        <div class="input-field">
+                            <textarea id="comment" class="materialize-textarea"></textarea>
+                            <label for="comment">Comment</label>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <a id="btnSave" class="modal-action modal-close waves-effect waves-green btn-flat">Save</a>
+                    <a class="modal-action modal-close waves-effect waves-green btn-flat">Close</a>
+                </div>
+            </div>
+        </section>
+        <script src="lib/jquery-3.2.1.min.js"></script>
+        <script src="lib/materialize/js/materialize.min.js"></script>
+        <script src="lib/jQuery-contextMenu/jquery.contextMenu.min.js"></script>
+        <script src="lib/jquery-ui-selectable.min.js"></script>
+        <script>
+            // Numeric only control handler
+            jQuery.fn.ForceNumericOnly =
+                function () {
+                    return this.each(function () {
+                        $(this).keydown(function (e) {
+                            var key = e.charCode || e.keyCode || 0;
+                            // allow backspace, tab, delete, enter, arrows, numbers and keypad numbers ONLY
+                            // home, end, period, and numpad decimal
+                            return (
+                                key == 8 ||
+                                key == 9 ||
+                                key == 13 ||
+                                key == 46 ||
+                                key == 110 ||
+                                //key == 190 || //decimal/period
+                                (key >= 35 && key <= 40) ||
+                                (key >= 48 && key <= 57) ||
+                                (key >= 96 && key <= 105));
+                        });
+                    });
+                };
+            $("#frmEdit .number").ForceNumericOnly();
+            $('#our_table tbody').selectable(); //jQuery UI selectable
+
+            function showEditSong() {
+                try {
+                    console.log(lastHovered);
+                    if (lastHovered == undefined) {
+                        lastHovered = $('tbody tr:first')[0].getAttribute('data-id'); //get first song in list
+                    }
+                    var id = parseInt(lastHovered);
+                    console.log(lastHovered + "|" + id);
+
+                    $('#track').val(songs[id].track);
+                    $('#title').val(songs[id].title);
+                    $('#artist').val(songs[id].performer);
+                    $('#albumArtist').val(songs[id].artist);
+                    $('#album').val(songs[id].album);
+                    $('#year').val(songs[id].year);
+                    $('#disc').val(songs[id].disc);
+                    $('#genre').val(songs[id].genre);
+                    $('#comment').val(songs[id].comment);
+
+                    Materialize.updateTextFields();
+
+                } catch (e) { }
+                $('#modalEdit').modal('open');
+            }
+
+            //context menu for songs
+            $(function () {
+                $.contextMenu({
+                    selector: '#our_table tbody tr',
+                    callback: function (key, options) {
+                        var m = "clicked: " + key;
+                        //window.console && console.log(m) || alert(m);
+                        if (key == "edit") {
+                            showEditSong();
+                        }
+                    },
+                    items: {
+                        "edit": { name: "Edit", icon: "edit" },
+                        "delete": { name: "Delete", icon: "delete" },
+                        "sep1": "---------",
+                        "quit": {
+                            name: "Quit", icon: function () {
+                                return 'context-menu-icon context-menu-icon-quit';
+                            }
+                        }
+                    }
+                });
+            });
+            $(document).ready(function () {
+                // initialize the modal
+                $('.modal').modal();
+            });
+
+            //the last hovered song - used when user has not selected any songs
+            var lastHovered = undefined;
+            $('tbody tr').on('mouseover', function () {
+                lastHovered = this.getAttribute('data-id');
+            });
+
+            //when save is clicked when a song is edited
+            $('#btnSave').on('click', function () {
+                var save = new songFile();
+                save.id = parseInt(lastHovered);
+                save.album = $('#album').val();
+                save.performer = $('#artist').val();
+                save.artist = $('#albumArtist').val();
+                save.genre = $('#genre').val();
+                save.title = $('#title').val();
+                save.track = parseInt($('#track').val());
+                save.year = parseInt($('#year').val());
+                save.disc = parseInt($('#disc').val());
+                save.comment = $('#comment').val();
+
+                console.log(save);
+                cefCustomObject.getSongs(JSON.stringify([save]));
+            });
+
+            $('#edit').on('click', function () {
+                showEditSong();
+            });
+        </script>
+        <script>
+            $('#folder').on('click', function () {
+                cefCustomObject.chooseFolder();
+            });
+
+            function hello() {
+                console.log("Hello");
+            }
+
+            class songFile {
+                constructor(id, album, fileName, artist, performer, genre, title, track, year, disc, comment) {
+                    this.id = id;
+                    this.fileName = fileName;
+                    this.artist = artist;
+                    this.performer = performer;
+                    this.genre = genre;
+                    this.title = title;
+                    this.track = track;
+                    this.year = year;
+                    this.disc = disc;
+                    this.comment = comment;
+                    this.album = album;
+                }
+            }
+            var songs = [];
+
+            //update the table with info from songs
+            function updateTable() {
+                var tableHTML = ''; songs.forEach(function(s){
+                    tableHTML += '<tr data-id=' + s.id + '><td>' + s.track + '</td><td>' + s.title + '</td><td>' + s.performer + '</td><td>' + s.artist + '</td>' +
+                        '<td> ' + s.album + '</td > <td>' + s.year + '</td> <td>' + s.disc + '</td> <td>' + s.genre + '</td> <td>' + s.fileName + '</td> <td>' + s.comment
+                        + '</td></tr > ';
+                });;
+
+                $('#our_table tbody').html(tableHTML);
+                //enable lastHovered functionality
+                $('tbody tr').on('mouseover', function () { lastHovered = this.getAttribute('data-id'); });
+            }
+
+            function sendSongs() {
+                cefCustomObject.getSongs(JSON.stringify(songs));
+            }
+        </script>
+    </body>
+</html>

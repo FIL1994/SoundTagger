@@ -1,0 +1,14 @@
+﻿<Window x:Class="SoundTagger.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:cefSharp="clr-namespace:CefSharp.Wpf;assembly=CefSharp.Wpf"
+        xmlns:local="clr-namespace:SoundTagger"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="600" Width="800" Closing="OnApplicationExit">
+    <Grid Name="myGrid">
+        <!--<cefSharp:ChromiumWebBrowser Grid.Row="0"
+        Address="https://github.com/cefsharp/CefSharp/wiki/Frequently-asked-questions" />-->
+    </Grid>
+</Window>
