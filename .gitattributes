@@ -63,3 +63,4 @@
 #*.RTF   diff=astextplain
 
 *.rb linguist-language=csharp
+SoundTagger/html-resources/* linguist-vendored
