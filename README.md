@@ -1,5 +1,5 @@
 # SoundTagger
-An application for editing tags of mp3, flac, mp4, wv, m4a, aac, ogg and wma files.
+An application that edits tags of mp3, flac, mp4, wv, m4a, aac, ogg and wma files.
 
 Uses C# with JavaScript, CSS and HTML.
 
